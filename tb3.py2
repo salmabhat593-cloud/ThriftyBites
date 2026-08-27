@@ -1,0 +1,76 @@
+from food_data import food_items
+from cart_optimizer import optimize_cart
+from price_comparator import compare_prices
+from user_intake import log_user_intake, get_most_frequent_item
+
+def main():
+    budget = int(input("Enter your budget (e.g., 3000): "))
+    duration = input("Enter duration (day, week, month): ").lower()
+    nutrition_choice = input("Enter nutrition priority (protein, carb, fiber): ").lower()
+    diet_type = input("Is vegetarian? (yes/no): ").lower()
+
+    # Validate nutrition_choice
+    if nutrition_choice not in ['protein', 'carb', 'fiber']:
+        print("Invalid nutrition priority. Defaulting to protein.")
+        nutrition_choice = 'protein'
+
+    display_choice = nutrition_choice  # For printing
+    if nutrition_choice == 'carb':
+        nutrition_choice = 'carbs'
+
+    duration_multipliers = {'day': 1, 'week': 7, 'month': 30}
+    multiplier = duration_multipliers.get(duration, 1)
+
+    # Calculate daily budget
+    daily_budget = budget / multiplier
+
+    # Apply basic filter for vegetarian
+    filtered_items = food_items
+    if diet_type == 'yes':
+        filtered_items = [item for item in food_items if 'non_vegetarian' not in item.get('tags', [])]
+
+    # Optimize cart for daily budget
+    cart, daily_cost, daily_nutrition, daily_calories = optimize_cart(daily_budget, filtered_items, nutrition_choice)
+
+    # Scale totals to full duration
+    total_cost = daily_cost * multiplier
+    total_nutrition = daily_nutrition * multiplier
+    total_calories = daily_calories * multiplier
+
+    print(f"\nSuggested Grocery Cart for {duration}:")
+    for item in cart:
+        print(f"- {item['name']} (₹{item['price']})")
+    print(f"Total cost for {duration}: ₹{total_cost:.2f}")
+    print(f"Total {display_choice} for {duration}: {total_nutrition:.2f}g")
+    print(f"Total calories for {duration}: {total_calories:.2f} kcal")
+
+    # Full nutrient breakdown
+    total_protein = sum([next((f['protein'] for f in filtered_items if f['name'] == item['name']), 0) for item in cart]) * multiplier
+    total_carbs = sum([next((f['carbs'] for f in filtered_items if f['name'] == item['name']), 0) for item in cart]) * multiplier
+    total_fiber = sum([next((f['fiber'] for f in filtered_items if f['name'] == item['name']), 0) for item in cart]) * multiplier
+    print(f"\nFull Nutrient Breakdown for {duration}:")
+    print(f"- Protein: {total_protein:.2f}g")
+    print(f"- Carbs: {total_carbs:.2f}g")
+    print(f"- Fiber: {total_fiber:.2f}g")
+    print(f"- Calories: {total_calories:.2f} kcal")
+
+    # Price comparison scaled
+    prices = compare_prices(cart, filtered_items)
+
+    print("\nCart cost across different platforms:")
+    for platform, cost in prices.items():
+        scaled_price = cost * multiplier
+        print(f"{platform}: ₹{scaled_price:.2f}")
+
+    best_platform = min(prices, key=prices.get)
+    best_scaled_price = prices[best_platform] * multiplier
+    print(f"\nBest platform for your cart for {duration}: {best_platform} (₹{best_scaled_price:.2f})")
+
+    # Log and frequent item
+    log_user_intake(cart)
+    item, count = get_most_frequent_item()
+    if item:
+        print(f"\n💡 Most frequently chosen item: {item} (chosen {count} times)")
+
+if __name__ == "__main__":
+    main()
