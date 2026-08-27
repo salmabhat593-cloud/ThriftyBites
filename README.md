@@ -34,22 +34,7 @@ First, the user provides their budget and food preferences. Based on this inform
 
 The final goal is to generate a food cart that fits the user's budget and requirements.
 
-Future Roadmap:
-
-In the future, I would like to improve ThriftyBites by adding more useful features. Some of the planned improvements are:
-
-- Real-time food price updates
-- More personalized recommendations
-- Comparison between different grocery platforms
-- Location-based price comparison
-- Better budget tracking
-- Nutrition information for food items
-- A mobile application
-- Notifications for price changes and better deals
-
-Project Goal:
-
-The goal of ThriftyBites is to make food planning easier for people who want to manage their budget without spending too much time comparing different options. Through this project, I want to create a simple solution that helps users make smarter and more affordable food choices.
 
 
-I am Salma, and I developed this project as part of my learning journey. Through ThriftyBites, I wanted to work on a real-world problem and apply my knowledge of technology to create a practical solution. This project has also helped me learn more about building projects, problem-solving, and developing solutions based on user needs.
+
+
